@@ -156,6 +156,9 @@ def parse_args():
     date.add_argument("-s", "--startdate", type=str, required=True, help="Date on format mm-dd-yyyy")
     date.add_argument("-l", "--length", type=int, required=False, default=0, help="Number of days (past startdate) to look for flights")
 
+    # MAX_LAYOVERS: the number of layovers
+    parser.add_argument("--max_layovers", type=int, required=False, default=0, help="Number of layovers to get from origin to destination")
+
     # debug mode: bypass all exit codes
     parser.add_argument("--debug", action='store_true')
     
@@ -177,46 +180,42 @@ def main():
         args.destination_airports, args.destination_coordinates, args.destination_address, args.destination_region, args.destination_distance, FlightFinder.get_airports_anywhere(args.origin_distance)
     )
 
-    max_connections = 1 # TODO: make parameter later
+    max_layovers = args.max_layovers
     # make chains of length up to max_connections with no repititions
-    all_airports = FlightFinder.get_airports()
-    flight_graph = {}
-    def addFlightGraphLayers(graph, path, layer):
-        if layer == max_connections: return
+    all_airports = FlightFinder.get_all_airports_with_airlines(airlines)
+
+    routes = []
+    def route_finder(flight_path, airline_path, num_connections):
+        # base case: origin -> destination route found 
+        if flight_path[-1] in airports_destination:
+            theoretical_route = []
+            for i in range(len(flight_path)-1):
+                theoretical_route.append(
+                    TheoreticalFlight(flight_path[i], flight_path[i+1], airline_path[i])
+                )
+            routes.append(theoretical_route)
+        # base case: origin -> destination routes not found (with max_connections-many connections or less)
+        if num_connections == max_layovers: return
+
+        # for airport in set of all_airports
         for airport in all_airports:
-            if airport in path: continue
-            graph[airport] = {}
-            addFlightGraphLayers(graph[airport], path + [airport], layer+1)
-
-    addFlightGraphLayers(flight_graph, [], 0)
-
-    
-
-    # filter out all impossible origin-to-destination (due to airline not currently flying those routes)
-    
-    theoretical_flights = [] # List[from, to]
-    for origin in airports_origin:
-        for destination in airports_destination:
+            if airport in flight_path: continue # prevent cyclical routes
             for airline in airlines:
-                if FlightFinder.flight_exists(airline, origin, destination):
-                    theoretical_flights.append(
-                        TheoreticalFlight(origin, destination, airline)
-                    )
+                if FlightFinder.flight_exists(airline, flight_path[-1], airport):
+                    route_finder(flight_path + [airport], airline_path + [airline], num_connections+1)
+
+    for airport in airports_origin: route_finder([airport], [], -1)
 
     startdate, enddate = FlightFinder.get_start_end_date(args.startdate, args.length)
-    if len(theoretical_flights) * ((enddate-startdate).days + 1) > 10:
+    if len(routes) * ((enddate-startdate).days + 1) > 10:
         s = "[flight_scaper.py] You are trying to print out too many flights -- comment this line out if this is intentional, otherwise adjust your search"
-        s += f"\n We've found {len(theoretical_flights)} city-to-city possibilities with {((enddate-startdate).days + 1)} dates to look at!"
+        s += f"\n We've found {len(routes)} city-to-city possibilities with {((enddate-startdate).days + 1)} dates to look at!"
         if args.debug: print(f"Debug mode enabled, bypassing this exit code: {s}")
         else: exit(s)
 
-    # filter flights based on all google flights available for this airline
-    possible_real_flights = []
-    for tf in theoretical_flights:
-        possible_real_flights += tf.get_real_flights(startdate, enddate)
+    routes = sorted(routes, key=lambda route: len(route))
 
-    print(possible_real_flights)
-
+    print(routes)
 
     exit()
     

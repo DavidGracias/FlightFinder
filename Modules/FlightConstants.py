@@ -578,7 +578,7 @@ class FlightConstants():
     DEFAULT_TRAVEL_DISTANCE = 80
 
     def get_all_airports():
-        f = open('airports-code@public.json')
+        f = open('Modules/airports-code@public.json')
         airport_data = json.load(f)
 
         airports = []
@@ -592,3 +592,9 @@ class FlightConstants():
                 Airport(airport_code, latitude, longitude, country_code)
             )
         return airports
+    
+    def get_airport_from_code(code):
+        all_airports = FlightConstants.get_all_airports()
+        for airport in all_airports:
+            if airport == code: return airport
+        exit(f"The given code \"{code}\" is not a valid airport code / was not found")

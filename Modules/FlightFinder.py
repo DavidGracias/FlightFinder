@@ -11,7 +11,7 @@ class FlightFinder():
     # AIRPORTS: Get all airports that match the first given parameter
     def get_airports(airports, coordinates, address, region, distance, default):
         if airports:
-            desired_airports = airports
+            desired_airports = [FlightConstants.get_airport_from_code(airport) for airport in airports]
         elif coordinates:
             latitude, longitude = coordinates
             desired_airports = FlightFinder.get_all_airports_within_circle(latitude, longitude, distance)
@@ -63,6 +63,17 @@ class FlightFinder():
         return [a for dist, a in airports_in_range_sorted]
 
 
+    def get_all_airports_with_airlines(airlines):
+        all_airports = FlightConstants.get_all_airports()
+        airline_airports = set()
+        for airline in airlines:
+            for a1, a2 in FlightConstants.city_to_city_by_airline[airline]:
+                airline_airports.add(a1)
+                airline_airports.add(a2)
+
+        return [airport for airport in all_airports if airport.airport_code in airline_airports]
+            
+    
     def flight_exists(airline, origin, destination):
         origin_to_destination = FlightConstants.city_to_city_by_airline[airline]
         for o1, d1 in origin_to_destination:
