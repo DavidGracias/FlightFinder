@@ -11,6 +11,11 @@ class Airport():
         if type(other) == type(self): return self.airport_code == other.airport_code
         return False
 
+    def __lt__(self, other) -> bool:
+        if type(other) == type(""): return self.airport_code < other
+        if type(other) == type(self): return self.airport_code < other.airport_code
+        return False
+
     def getCodeAndCoord(self):
         return self.airport_code, self.coordinates
     

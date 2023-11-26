@@ -47,7 +47,10 @@ class FlightFinder():
 
     # DATES: Get start and end date for desired flights
     def get_start_end_date(startdate, length):
-        start = datetime.strptime(startdate, '%m-%d-%Y')
+        try:
+            start = datetime.strptime(startdate, '%m-%d-%Y')
+        except:
+            start = datetime.strptime(startdate, '%m/%d/%Y')
         return start, start + timedelta(days=length)
 
 

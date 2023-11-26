@@ -1,128 +1,11 @@
 import random, time, requests, json, html
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-import browsercookie
 import argparse
 from Modules.FlightFinder import FlightFinder
 from Modules.FlightConstants import FlightConstants
-from Modules.Flight import TheoreticalFlight
-
-from random_user_agent.user_agent import UserAgent
-# def get_flight_html(origin, date, session, cjs, roundtrip, start_index=0, destinations = all_destinations):
-
-#     date_str = date.strftime("%b-%d,-%Y").replace("-", "%20")
-#     #f = open("destinations.txt", "a")
-#     #f.write("Origin: " + origin + "\n")
-#     destination_keys = list(destinations.keys()) # Retrieve a list of destination keys
-#     for i in range(start_index, len(destination_keys)):
-#         dest = destination_keys[i]
-
-#         if dest == origin:
-#             print("cannot search between identical origin and destination")
-#             continue
-
-#         # Choose a random User-Agent header
-#         header = {
-#             "User-Agent": UserAgent().get_random_user_agent(),
-#         }
-#         cj = browsercookie.chrome() if cjs else None
-#         time.sleep(random.uniform(0.5,1.5))
-#         #time.sleep(random.uniform(0.5,1.5))
-#         # Get schedule data for the route
-#         schedule_url = f"https://booking.flyfrontier.com/Flight/RetrieveSchedule?calendarSelectableDays.Origin={origin}&calendarSelectableDays.Destination={dest}"
-#         schedule_response = requests.Session().get(schedule_url, headers=header, cookies=cj) if cjs else requests.Session().get(schedule_url, headers=header)
-            
-#         if schedule_response.status_code == 200:
-#             schedule_data = schedule_response.json()
-#             disabled_dates = schedule_data["calendarSelectableDays"]["disabledDates"]
-#             last_available_date = schedule_data["calendarSelectableDays"]["lastAvailableDate"]
-
-#             # Convert the input date to the same format as the disabled dates list
-#             formatted_date = date.strftime("%m/%d/%Y")
-
-#             # Check if the date is in the list of disabled dates
-#             if formatted_date in disabled_dates or last_available_date == "0001-01-01 00:00:00":
-#                 print(f"{i}. No flights available on {formatted_date} from {origin} to {dest}. Date skipped.")
-#                 continue
-#         else:
-#             print(f"{i}. Problem accessing URL: code {schedule_response.status_code}\n url = " + schedule_url)
-
-        
-#         # Mimic human-like behavior by adding delays between requests
-#         #delay = random.uniform(2, 5)  # Random delay between 2 to 5 seconds
-#         #time.sleep(delay)
-#         time.sleep(random.uniform(0.5,1.5))
-#         url = f"https://booking.flyfrontier.com/Flight/InternalSelect?o1={origin}&d1={dest}&dd1={date_str}&ADT=1&mon=true&promo="
-#         response = session.get(url, headers=header, cookies=cj) if cjs else session.get(url, headers=header)
-#         if (response.status_code == 200):
-#             decoded_data = extract_html(response)
-#             if (decoded_data != "NoneType"):
-#                 orgin_success = extract_json(decoded_data, origin, dest, date, roundtrip)
-#                 if(roundtrip == 1 & orgin_success):
-#                     new_dest = {origin: all_destinations[origin]}
-#                     # 1 = trigger roundtrip
-#                     # 0 = no roundtrip
-#                     # -1 = in roundtrip recurssion 
-#                     get_flight_html(dest, (date+timedelta(days=1)), session, cjs, -1, 0, new_dest)
-#                     roundtrip = 1 # reset var for the next dest
-#                 #f.write(dest + ",")
-#         else:
-#             print(f"{i}. Problem accessing URL: code {response.status_code}\n url = " + url)
-#             break
-#     #f.close()
-
-# def extract_json(flight_data, origin, dest, date, roundtrip):
-#     # Extract the flights with isGoWildFareEnabled as true
-#     try:
-#         flights = flight_data["journeys"][0]["flights"]
-#     except (TypeError, KeyError):
-#         return 0
-#     if (flights == None):
-#         return 0
-#     go_wild_count = 0
-
-#     for flight in flights:
-#         if flight["isGoWildFareEnabled"]:
-#             if (go_wild_count == 0):
-#                 print(f"\n{"{} to {}: {}".format(origin, dest, all_destinations[dest]) if roundtrip != -1 else "**Return flight"} available:")
-#                 #print(f"\n{"{origin} to {dest}: {all_destinations[dest]}" if roundtrip!=-1 else "Return flight"} available:")
-#             go_wild_count+=1
-#             info = flight["legs"][0]
-#             print(f"flight {go_wild_count}. {flight["stopsText"]}")
-#             print(f"\tDate: {info["departureDate"][5:10]}")
-#             print(f"\tDepart: {info["departureDateFormatted"]}")
-#             print(f"\tTotal flight time: {flight["duration"]}")
-#             print(f"Price: ${flight["goWildFare"]}")
-#             # if go wild seats value is provided
-#             if flight["goWildFareSeatsRemaining"] is not None:
-#                 print(f"Go Wild: {flight["goWildFareSeatsRemaining"]}\n")
-    
-#     if (go_wild_count == 0):
-#         print(f"No {"next day return " if roundtrip==-1 else ""}flights from {origin} to {dest}")
-#         return 0
-#     else:
-#         if(roundtrip==-1):
-#             roundtrip_avail[origin] = all_destinations.get(origin)
-#         else:
-#             destinations_avail[dest] = all_destinations.get(dest)
-#         print(f"{origin} to {dest}: {go_wild_count} GoWild {"return " if roundtrip==-1 else""}flights available for {date.strftime("%A, %m-%d-%y")}")
-#     return 1
-
-# def extract_html(response):
-#     # Parse the HTML source using BeautifulSoup
-#     soup = BeautifulSoup(response.text, "html.parser")
-    
-#     # Find all <script> tags with type="text/javascript" and extract their contents
-#     scripts = soup.find("script", type="text/javascript")
-#     decoded_data = html.unescape(scripts.text)
-#     decoded_data = decoded_data[decoded_data.index("{"):decoded_data.index(";")-1]
-#     return json.loads(decoded_data)
-
-# def print_dests(origin):
-#     print(f"\n{len(destinations_avail)} destinations found from {origin}:")
-#     for dest, name in destinations_avail.items():
-#         print(f"{"**" if dest in roundtrip_avail else ""}{dest}: {name}")
-#     print("** = next day return flight available")
+from Modules.Flight import TheoreticalFlight, Flight, FlightSegment
+from collections import defaultdict
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Check flight availability for ORIGIN -> DESTINATION for a given date and airline")
@@ -159,6 +42,11 @@ def parse_args():
     # MAX_LAYOVERS: the number of layovers
     parser.add_argument("--max_layovers", type=int, required=False, default=0, help="Number of layovers to get from origin to destination")
 
+    # FILTERS: determine the price or location or other factors that affect your flight decision
+    filters = parser.add_argument_group(title="Filter", description="Add filters to narrow down your eventual flights")
+    filters.add_argument("--filter_price", type=int, required=False, default=float('inf'), help="Filters out all potential (Origin -> Destination) flights that cost more than this amount")
+    filters.add_argument("--filter_duration", type=int, required=False, default=float('inf'), help="Filters out all potential (Origin -> Destination) flights that take more than this many hours")
+
     # debug mode: bypass all exit codes
     parser.add_argument("--debug", action='store_true')
     
@@ -179,8 +67,6 @@ def main():
     airports_destination = FlightFinder.get_airports(
         args.destination_airports, args.destination_coordinates, args.destination_address, args.destination_region, args.destination_distance, FlightFinder.get_airports_anywhere(args.origin_distance)
     )
-
-    max_layovers = args.max_layovers
     # make chains of length up to max_connections with no repititions
     all_airports = FlightFinder.get_all_airports_with_airlines(airlines)
 
@@ -195,7 +81,7 @@ def main():
                 )
             routes.append(theoretical_route)
         # base case: origin -> destination routes not found (with max_connections-many connections or less)
-        if num_connections == max_layovers: return
+        if num_connections == args.max_layovers: return
 
         # for airport in set of all_airports
         for airport in all_airports:
@@ -207,7 +93,7 @@ def main():
     for airport in airports_origin: route_finder([airport], [], -1)
 
     startdate, enddate = FlightFinder.get_start_end_date(args.startdate, args.length)
-    if len(routes) * ((enddate-startdate).days + 1) > 10:
+    if len(routes) * ((enddate-startdate).days + 1) > 18:
         s = "[flight_scaper.py] You are trying to print out too many flights -- comment this line out if this is intentional, otherwise adjust your search"
         s += f"\n We've found {len(routes)} city-to-city possibilities with {((enddate-startdate).days + 1)} dates to look at!"
         if args.debug: print(f"Debug mode enabled, bypassing this exit code: {s}")
@@ -215,33 +101,58 @@ def main():
 
     routes = sorted(routes, key=lambda route: len(route))
 
-    print(routes)
+    stopLoop = False
+    real_routes = []
+    for route in routes:
+        real_flights = []
+        for theoretical_flight in route:
+            try:
+                real_flights.append(
+                    theoretical_flight.get_real_flights(startdate, enddate) # all flights from origin to route on this day
+                )
+            except:
+                stopLoop = True
+                break
+        real_routes.append(real_flights)
+        if stopLoop: break
 
-    exit()
-    
-    origins = [o.upper() for o in args.origin]
-    startdate = datetime.strptime(args.startdate, "%m-%d-%Y")
+    full_real_routes = defaultdict(lambda: [])
+    def getFullRealRoutes(route, path):
+        if route == []:
+            temp_flight = Flight(
+                sum([ int(flight.cost) for flight in path]),
+                [ FlightSegment(f.getOrigin(), f.getDestination(), f.getTimeDepart(), f.getTimeArrive(), list(f.getAirlines())[0]) for f in path ]
+            )
+            if temp_flight.hasValidPath():
+                full_real_routes[(path[0].getOrigin(), path[-1].getDestination())].append(
+                    temp_flight
+                )
+            return
         
-    enddate = startdate + timedelta(days=args.length)
-    # session = requests.Session()
+        for o_to_d_option in route[0]: getFullRealRoutes(route[1:], path + [o_to_d_option])
 
-    # fly_date = startdate
-    # while fly_date <= enddate:
-    #     print(f"\nFlights for {fly_date.strftime("%A, %m-%d-%y")}:")
-    #     for origin in origins:
-    #         get_flight_html(origin, fly_date, session, cjs, roundtrip, resume)
-    #         print_dests(origin)
-    #     fly_date = fly_date + timedelta(days=1)
+    for route in real_routes: getFullRealRoutes(route, [])
 
+    # print filtered and sorted flights
+    filter_flights = lambda flight: (flight.cost <= args.filter_price) and (flight.getDuration() <= args.filter_duration)
+    time_cost = lambda flight: flight.cost + flight.getDuration()
 
+    final_routes = {}
+    num_final_routes = 0
+    for k in full_real_routes:
+        filtered = sorted(filter(filter_flights, full_real_routes[k]), key=time_cost)
+        if filtered:
+            final_routes[k] = filtered
+            num_final_routes += len(final_routes[k])
+    
+    print(f"We've discovered {num_final_routes}-many flights that fit your needs!")
+    if num_final_routes < 30: print("You way want to add filters (if you haven't) below to help narrow down your search :)")
+
+    for (o, d) in final_routes:
+        if not (o in airports_origin and d in airports_destination): continue
+
+        print(f"{o} -> {d}")
+        for f in final_routes[(o,d)]: print(f"\t{f}")
 
 if __name__ == "__main__":
-
-    # output = FlightConstants.get_all_airports()
-    # for airport in output:
-    #     def get_address_from_IACA(airport):
-    #         return ""
-    #     print(f"\"{airport}\": \"{get_address_from_IACA(airport)}\",")
-    # print(output)
-
     main()

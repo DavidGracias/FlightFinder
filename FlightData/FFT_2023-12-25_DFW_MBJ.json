@@ -1,0 +1,1 @@
+[{"cost": "341", "path": [{"origin": "DFW", "destination": "MCO", "time_depart": "2023-12-25 00:59", "time_arrive": "2023-12-25 04:45", "airline": "FFT"}, {"origin": "MCO", "destination": "MBJ", "time_depart": "2023-12-25 10:40", "time_arrive": "2023-12-25 12:49", "airline": "FFT"}]}]
