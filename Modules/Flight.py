@@ -128,25 +128,38 @@ class TheoreticalFlight(FlightSegment):
         request_wrapper = lambda url: requests.Session().get(url, headers=getHeader(), cookies=random.choice([browsercookie.chrome(), None]))
 
         shouldFetchNewData = input(f"You are missing data for {filepath} and are about to make a request to fetch it from the internet. Type `yes` to continue or anything else to abort.\n\t")
-        if not shouldFetchNewData in ['yes', 'skip']:
+        if not shouldFetchNewData in ['yes', 'skip', 'manual']:
             exit("Did not type `yes`... returning no info now!")
         if shouldFetchNewData in ['skip']:
             return []
         
         # request to get new data
-        time.sleep(random.uniform(5, 20))
+        time.sleep(random.uniform(1, 5))
         if self.airline == "FFT":
             # check to see if there's GoWild availability
-            from Modules.selenium import initializeSelenium
-            service, driver = initializeSelenium()
-
             goWild_url = f"https://booking.flyfrontier.com/Flight/InternalSelect?o1={self.origin}&d1={self.destination}&dd1={date.strftime('%b-%d,-%Y').replace('-', '%20')}&ADT=1&mon=true&promo="
-            driver.get(goWild_url)
-            WebDriverWait(driver, 60*60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.ibe-flight-info-container")))
-            html_data = driver.page_source
+            if shouldFetchNewData in ['manual']:
+                html_filepath = f"html/{self.airline}_{date.strftime('%Y-%m-%d')}_{self.origin}_{self.destination}.html"
+                print(f"Go to the url {goWild_url}")
+                print(f"Go add the data to the filepath {html_filepath}")
+                if not os.path.exists(html_filepath): open(html_filepath, "w")
+                html_data = ""
+                while len(html_data) < 100:
+                    time.sleep(10)
+                    with open(html_filepath, "r") as f:
+                        html_data = f.read()
+                print(f"adding the html data that you manually added now to the FlightData: {len(html_data)}")
+                
+            else:
+                from Modules.selenium import initializeSelenium
+                service, driver = initializeSelenium()
+                driver.get(goWild_url)
+                time.sleep(random.uniform(5, 15))
+                WebDriverWait(driver, 60*60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.ibe-flight-info-container")))
+                html_data = driver.page_source
+            
             soup = BeautifulSoup(html_data, 'html.parser')
 
-            
             real_flights = []
             for row in soup.find_all('div', class_ = 'ibe-flight-info-row'):
                 setStringIfReal = lambda x: x if not x else x.string
@@ -163,7 +176,7 @@ class TheoreticalFlight(FlightSegment):
                 if not len(cost_list): continue
                 
                 cost = min([c[1:] for c in cost_list])
-                isGoWild = cost == gowild[1:]
+                isGoWild = f"${cost}" == gowild
                 
                 flights = row.find_all('div', class_ = 'ibe-flight--segment')
                 if not flights: flights = [row]

@@ -106,13 +106,14 @@ def main():
     for route in routes:
         real_flights = []
         for theoretical_flight in route:
-            try:
+            # try:
                 real_flights.append(
                     theoretical_flight.get_real_flights(startdate, enddate) # all flights from origin to route on this day
                 )
-            except:
-                stopLoop = True
-                break
+            # except:
+            #     print("Exception encountered -- exitting now")
+            #     stopLoop = True
+            #     break
         real_routes.append(real_flights)
         if stopLoop: break
 
@@ -124,14 +125,18 @@ def main():
                 [ FlightSegment(f.getOrigin(), f.getDestination(), f.getTimeDepart(), f.getTimeArrive(), list(f.getAirlines())[0]) for f in path ]
             )
             if temp_flight.hasValidPath():
-                full_real_routes[(path[0].getOrigin(), path[-1].getDestination())].append(
-                    temp_flight
-                )
+                try:
+                    full_real_routes[(path[0].getOrigin(), path[-1].getDestination())].append(
+                        temp_flight
+                    )
+                except:
+                    print(route, path, sep="\n")
             return
         
         for o_to_d_option in route[0]: getFullRealRoutes(route[1:], path + [o_to_d_option])
 
-    for route in real_routes: getFullRealRoutes(route, [])
+    for route in real_routes:
+        if route: getFullRealRoutes(route, [])
 
     # print filtered and sorted flights
     filter_flights = lambda flight: (flight.cost <= args.filter_price) and (flight.getDuration() <= args.filter_duration)

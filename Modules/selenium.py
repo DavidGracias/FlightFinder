@@ -30,7 +30,7 @@ def initializeSelenium():
 
     # Chrome Profile:
     options.add_argument(f'user-agent={userAgent}')
-    options.add_argument(f"--user-data-dir={chrome_profile}")
+    # options.add_argument(f"--user-data-dir={chrome_profile}")
     
 
     options.page_load_strategy = 'normal'
