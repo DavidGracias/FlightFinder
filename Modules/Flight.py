@@ -152,7 +152,7 @@ class TheoreticalFlight(FlightSegment):
                 
             else:
                 from Modules.selenium import initializeSelenium
-                service, driver = initializeSelenium()
+                driver = initializeSelenium()
                 driver.get(goWild_url)
                 time.sleep(random.uniform(5, 15))
                 WebDriverWait(driver, 60*60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.ibe-flight-info-container")))

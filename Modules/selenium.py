@@ -8,14 +8,26 @@ from fake_useragent import UserAgent
 
 
 def initializeSelenium():
-    # allows for passwords and signin to work automatically (theoretically)
-    chrome_profile = "/Users/davidgracias/Library/Application Support/Google/Chrome/"
 
-    ua = UserAgent()
-    userAgent = ua.random
+    
     
     service = Service(ChromeDriverManager().install())
     options = webdriver.ChromeOptions()
+
+    # Randomized Chrome Profile:
+    ua = UserAgent(browsers=['chrome'])
+    userAgent = ua.random
+    options.add_argument(f'user-agent={userAgent}')
+
+    # allows for passwords and signin to work automatically (theoretically)
+    chrome_profile = "/Users/davidgracias/Library/Application Support/Google/Chrome/"
+    # options.add_argument(f"--user-data-dir={chrome_profile}")
+
+    # Automated options:
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    options.add_argument('--disable-blink-features=AutomationControlled')
+
     # Mock a non-headless session:
     # options.add_argument('--headless')
     # options.add_argument("--incognito")
@@ -24,20 +36,13 @@ def initializeSelenium():
     # options.add_argument("--window-size=1280,1280")
     # options.add_argument("--no-sandbox")
     # options.add_argument("--enable-javascript")
-    # options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    # options.add_experimental_option('useAutomationExtension', False)
-    # options.add_argument('--disable-blink-features=AutomationControlled')
 
-    # Chrome Profile:
-    options.add_argument(f'user-agent={userAgent}')
-    # options.add_argument(f"--user-data-dir={chrome_profile}")
     
 
     options.page_load_strategy = 'normal'
     driver = webdriver.Chrome(service=service, options=options)
-
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})") 
-    return service, driver
+    return driver
 
 def main():
     service, driver = initializeSelenium()
