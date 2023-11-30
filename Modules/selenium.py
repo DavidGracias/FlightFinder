@@ -37,7 +37,19 @@ def initializeSelenium():
     # options.add_argument("--no-sandbox")
     # options.add_argument("--enable-javascript")
 
+    # https://www.zenrows.com/blog/selenium-avoid-bot-detection#cloudscraper
+
+    import undetected_chromedriver as uc 
+    driver = uc.Chrome()
+    return driver
+
+    # # Install cloudscraper with pip install cloudscraper 
+    # import cloudscraper 
     
+    # # Create cloudscraper instance 
+    # scraper = cloudscraper.create_scraper() 
+    # # Or: scraper = cloudscraper.CloudScraper() # CloudScraper inherits from requests.Session 
+    # print(scraper.get("https://nowsecure.nl").text)
 
     options.page_load_strategy = 'normal'
     driver = webdriver.Chrome(service=service, options=options)

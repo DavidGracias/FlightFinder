@@ -101,6 +101,11 @@ def main():
 
     routes = sorted(routes, key=lambda route: len(route))
 
+    # print(routes)
+    for route in routes:
+        print(route)
+    exit()
+
     stopLoop = False
     real_routes = []
     for route in routes:

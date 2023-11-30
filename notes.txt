@@ -1,0 +1,54 @@
+Chicago -> MBJ
+
+
+Chicago -> ATL
+    1ab. Dec 23: 5/6pm -> 8/9pm ATL (92/119)
+    2ab. Dec 24: 5/6pm -> 8/9pm ATL (96/96)
+    3ab. Dec 25: 5/6pm -> 8/9pm ATL (48/92)
+
+- ATL
+    1. 24th: 6:55 AM – 9:50 AM (234)
+    2. 25th: 1:18 PM – 4:11 PM (110)
+    3. 26th: 10:50 AM – 1:48 PM (254)
+
+Chicago -> MCO:
+    There are other, but this makes the most sense:
+    24th: 8:25 PM – 12:27 AM (119)
+- MCO
+    1. 25th: 10:40 AM – 12:49 PM (100)
+
+
+
+
+Top Choices for Chicago -> MBJ:
+    [438, 16.5 hours]   Chicago -> MCO -> MBJ:      Dec 24 8:30 PM       ->     Dec 25 1:00 PM
+
+    [412, 22 hours]     Chicago -> ATL -> MBJ:      Dec 24 6:00 PM       ->     Dec 25 4:00 PM
+
+
+
+
+[652, 17 hours] Chicago -> ATL -> MBJ: Dec 23 5 PM -> Dec 24 10 AM
+[604, 21 hours] Chicago -> ATL -> MBJ: Dec 25 5 PM -> Dec 26 2 PM
+
+
+Return flights:
+
+MBJ -> MCO
+    1st: 2pm - 4pm (266)
+MCO -> PHX
+    1st: 9:15 PM – 12:07 AM+1 (519)
+    2nd: 10 PM – 1 AM+1 (149)
+
+MBJ -> ATL
+    1st: 5:30pm - 8:30pm (295)
+    2nd: 3pm - 6pm (325)
+ATL -> PHX
+    1st: 8:59 PM – 11:27 PM (148)
+    2nd: 8:59 PM – 11:27 PM (148)
+
+Top Choices for MBJ -> PHX:
+    [886, 6 hours]      MBJ -> ATL -> PHX:          Jan 1st 5:30PM      ->      Jan 1st 11:30PM
+    [830, 36.5 hours]   MBJ -> MCO -> PHX:          Jan 1st 2 PM        ->      Jan 3rd 1 AM
+    [946, 8 hours]      MBJ -> ATL -> PHX:          Jan 2nd 3 PM      ->        Jan 2nd 11:30PM
+
